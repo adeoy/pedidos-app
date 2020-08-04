@@ -1,21 +1,44 @@
-import React from "react";
-import { Container, Row, Col } from "reactstrap";
+import React, { useState } from "react";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+} from "react-router-dom";
 
-import Platillo from "./Components/Platillo";
-
-import platillo from "./data/platillo.json";
+import Home from './Pages/Home';
+import Platillo from './Pages/Platillo';
+import Carrito from './Pages/Carrito';
+import Menu from "./Components/Menu";
 
 function App() {
+  const [cart, setCart] = useState([]);
+
+  const addToCart = (platillo) => {
+    setCart([...cart, platillo]);
+  }
+  const removeFromCart = (_id) => {
+    setCart(cart.filter(platillo => {
+      return platillo._id !== _id;
+    }));
+  }
+
   return (
-    <main>
-      <Container>
-        <Row>
-          <Col xs="12" sm="6" md="4">
-            <Platillo data={platillo} />
-          </Col>
-        </Row>
-      </Container>
-    </main>
+    <Router>
+
+      <Menu numCart={cart.length} />
+
+      <Switch>
+        <Route path="/platillo/:_id" render={(props) => <Platillo addToCart={addToCart} {...props} />} />
+        <Route path="/carrito">
+          <Carrito cart={cart} removeFromCart={removeFromCart} />
+        </Route>
+        <Route path="/">
+          <Home />
+        </Route>
+      </Switch>
+
+    </Router>
+
   );
 }
 
